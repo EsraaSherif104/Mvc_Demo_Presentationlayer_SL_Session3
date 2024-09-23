@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace DemoPL
 {
     public class Startup
@@ -24,6 +25,7 @@ namespace DemoPL
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+          //  services.AddDbContext();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
