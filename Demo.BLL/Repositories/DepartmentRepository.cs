@@ -11,34 +11,44 @@ namespace Demo.BLL.Repositories
 {
     public class DepartmentRepository : IDepartmentRepository
     {
-        private MvcAppDbcontext dbcontext;
+        private readonly  MvcAppDbcontext _dbcontext;
         public DepartmentRepository(MvcAppDbcontext dbcontext)//ask clr for object from dbcontext
         {
-            
+            _dbcontext= dbcontext;
         }
         public int Add(Department department)
         {
-            throw new NotImplementedException();
+           _dbcontext.Add(department);
+         return _dbcontext.SaveChanges();      
         }
 
         public int Delete(Department department)
         {
-            throw new NotImplementedException();
+            _dbcontext.Remove(department);
+            return _dbcontext.SaveChanges();
         }
 
         public IEnumerable<Department> GetAll()
-        {
-            throw new NotImplementedException();
-        }
+          =>  _dbcontext.Department.ToList();
+
+        
 
         public Department GetById(int id)
         {
-            throw new NotImplementedException();
+          //var department=  _dbcontext.Department.Local.Where(d => d.Id == id).FirstOrDefault();
+          //  if(department == null)
+          //      department=_dbcontext.Department.Where(d=>d.Id==id).FirstOrDefault();
+          //      return department;
+            
+            return _dbcontext.Department.Find(id);
         }
 
         public int Update(Department department)
         {
-            throw new NotImplementedException();
+               _dbcontext.Update(department);
+            return _dbcontext.SaveChanges();    
+                
+                
         }
     }
 }

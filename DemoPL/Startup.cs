@@ -8,6 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Demo.DAL.Contexts;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Demo.BLL.Repositories;
+using Demo.BLL.Interface;
 
 
 namespace DemoPL
@@ -25,7 +30,12 @@ namespace DemoPL
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-          //  services.AddDbContext();
+            services.AddDbContext<MvcAppDbcontext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+
+            });//allow depandany injection
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

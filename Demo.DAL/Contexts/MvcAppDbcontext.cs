@@ -10,12 +10,16 @@ namespace Demo.DAL.Contexts
 {
     public class MvcAppDbcontext: DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        
-          =>  optionsBuilder.UseSqlServer("Server=.;Database=MvcAppS3;Trust_connection=true");
+        public MvcAppDbcontext(DbContextOptions<MvcAppDbcontext>options):base(options) 
+        {
+            
+        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
-        
-       
+        //  =>  optionsBuilder.UseSqlServer("Server=.;Database=MvcAppS3;Trust_connection=true");
+
+
+
         public DbSet<Department> Department { get; set; }
 
     }
