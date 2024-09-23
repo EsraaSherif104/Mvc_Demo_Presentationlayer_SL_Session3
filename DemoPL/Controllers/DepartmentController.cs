@@ -88,7 +88,39 @@ namespace DemoPL.Controllers
             return View(department);
            
         }
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            return Details(id, "Delete");
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(Department department, [FromRoute] int id)
+        {
+            if (id != department.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _departRepo.Delete(department);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (System.Exception ex)
+                {
+                    //1-log excep
+                    //2-form
+                    ModelState.AddModelError(string.Empty, ex.Message);
+
+                }
+
+
+            }
+            return View(department);
+
+        }
+      
 
 
 
