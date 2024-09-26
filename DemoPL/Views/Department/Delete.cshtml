@@ -4,6 +4,7 @@
 }
 
 <h1>Are You Sure You Want To Delete @Model.Name Department</h1>
+<div asp-validation-summary="All"></div>
 <form asp-action="Delete">
 
     <div class="form-group">
@@ -23,6 +24,5 @@
     <input type="submit" value="Delete" class="btn btn-danger" />
 
     <a asp-action="Index" class="btn btn-warning"> Cancle</a>
-    <input type="hidden" asp-for="Id" />
 
 </form>
