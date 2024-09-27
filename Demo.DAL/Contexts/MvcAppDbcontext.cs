@@ -21,6 +21,8 @@ namespace Demo.DAL.Contexts
 
 
         public DbSet<Department> Department { get; set; }
+        public DbSet<Employee> Empolyee { get; set; }
+
 
     }
 }

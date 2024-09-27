@@ -36,6 +36,7 @@ namespace DemoPL
 
             });//allow depandany injection
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IEmpolyeeRepository, EmpoyeeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
