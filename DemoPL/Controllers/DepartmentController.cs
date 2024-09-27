@@ -32,7 +32,15 @@ namespace DemoPL.Controllers
         {
             if(ModelState.IsValid) //server side 
             {
-                _departRepo.Add(department);
+              int result=  _departRepo.Add(department);
+                //3.temp data ->dictionary object 
+                //transfer action to action 
+                if (result > 0)
+                {
+                    TempData["message"] = "Department is created";
+
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(department);

@@ -1,0 +1,105 @@
+﻿@model IEnumerable<Employee>
+@{
+    //send data from view to layout
+    ViewData["Title"] = "All Employees";
+    string viewDataMessage = ViewData["message"] as string;
+    //enforce type safety->requires casting [strangly type]
+
+    string VBagMessage = ViewBag.message;
+            // can't enforce type safety->not requires casting [weakly type]
+
+}
+@if (TempData["message"] is not null)
+{
+    <div id="successMessage" class="alert alert-success">
+        @TempData["message"]
+    </div>
+}
+
+@* <div class="alert alert-success">
+    @ViewData["message"]
+</div> *@
+@* <div class="alert alert-primary">
+    @ViewBag.message
+</div> *@
+@{
+    <a asp-action="Create" class="btn btn-success">Create new Employee</a>
+    <br />
+
+    if (Model.Count() > 0)
+    {
+        <h1>All Employees</h1>
+        <br />
+        <table class="table table-striped table-hover m-3">
+            <thead>
+                <tr>
+                    <td>@Html.DisplayNameFor(d => d.Name)</td>
+                    <td>@Html.DisplayNameFor(d => d.age)</td>
+                    <td>@Html.DisplayNameFor(d => d.Salary)</td>
+                    <td>@Html.DisplayNameFor(d => d.Department)</td>
+
+                    <td>@Html.DisplayNameFor(d => d.Address)</td>
+                    <td>@Html.DisplayNameFor(d => d.Email)</td>
+                    <td>@Html.DisplayNameFor(d => d.PhoneNumber)</td>
+                    <td>@Html.DisplayNameFor(d => d.HireDate)</td>
+                    <td>@Html.DisplayNameFor(d => d.IsActive)</td>
+
+
+                    <td>Details</td>
+                    <td>Update</td>
+                    <td>Delete</td>
+
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model)
+                {
+                    <tr>
+                        <td>@employee.Name</td>
+                        <td>@employee.age</td>
+                        <td> @Html.DisplayFor(e=>employee.Salary)</td>
+                        <td> @Html.DisplayFor(e => employee.Department.Name)</td>
+
+                        <td>@employee.Address</td>
+                        <td> @Html.DisplayFor(e=>employee.Email)</td>
+                        <td>@employee.PhoneNumber</td>
+                        <td>@employee.HireDate</td>
+                        <td>
+                            @if (employee.IsActive == true)
+                            {
+                                <i class="fa-solid fa-circle" style="color:forestgreen"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-solid fa-circle" style="color:red"></i>
+
+                            }
+                        </td>
+
+                        <partial name="_ButtonsPartialView" model="@employee.Id"/>
+
+
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="mt-5 alert alert-warning">
+            <h3> There Is No Employee</h3>
+
+        </div>
+    }
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("#successMessage").fadeOut("slow");
+        }, 1000);
+    });
+</script>
