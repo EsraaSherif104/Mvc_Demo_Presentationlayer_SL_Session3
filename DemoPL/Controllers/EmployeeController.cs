@@ -1,6 +1,8 @@
 ﻿using Demo.BLL.Interface;
 using Demo.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DemoPL.Controllers
 {
@@ -14,21 +16,32 @@ namespace DemoPL.Controllers
             this._empolyeeRepository = empolyeeRepository;
             this._departmentRepository = departmentRepository;
         }
-        public IActionResult Index()
+        public IActionResult Index(string searchValue)
         {
-            var employee=_empolyeeRepository.GetAll();
+            IEnumerable<Employee> employee;
+            if (string.IsNullOrEmpty(searchValue))
+            {
+                employee = _empolyeeRepository.GetAll();
+
+            }
+            else
+            {
+                 employee = _empolyeeRepository.GetEmployeesByName(searchValue);
+
+            }
+            return View(employee);
+
             //1-view data =>keyvaluepair[dictionary object]
             //transfer data from controller [action] to its view
             //.net framework 3.5
             //faster
-          //  ViewData["message"] = "Hello from view data";
+            //  ViewData["message"] = "Hello from view data";
             //2.viewbag=>dynamic property [based on dynamic keyword]
             //data type in run time
             //no casting
             //transfer data
             //.net 4.8
-          //  ViewBag.message = "hello from view bag";
-            return View(employee);
+            //  ViewBag.message = "hello from view bag";
         }
 
         public IActionResult Create()
