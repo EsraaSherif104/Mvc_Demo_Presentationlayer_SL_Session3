@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Employee>
+﻿@model IEnumerable<EmployeeViewModel>
 @{
     //send data from view to layout
     ViewData["Title"] = "All Employees";
@@ -51,6 +51,8 @@
         <table class="table table-striped table-hover m-3">
             <thead>
                 <tr>
+                    <td>@Html.DisplayNameFor(d => d.Image)</td>
+
                     <td>@Html.DisplayNameFor(d => d.Name)</td>
                     <td>@Html.DisplayNameFor(d => d.age)</td>
                     <td>@Html.DisplayNameFor(d => d.Salary)</td>
@@ -75,6 +77,8 @@
                 @foreach (var employee in Model)
                 {
                     <tr>
+                        <td><img src="~/Files/Images/@employee.ImageName" class="rounded" height="40" width="40" alt="employee image"></td>
+
                         <td>@employee.Name</td>
                         <td>@employee.age</td>
                         <td> @Html.DisplayFor(e=>employee.Salary)</td>
