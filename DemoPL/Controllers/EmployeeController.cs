@@ -1,5 +1,8 @@
-﻿using Demo.BLL.Interface;
+﻿using AutoMapper;
+using Demo.BLL.Interface;
 using Demo.DAL.Models;
+using DemoPL.Helpers;
+using DemoPL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,28 +11,30 @@ namespace DemoPL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmpolyeeRepository _empolyeeRepository;
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(IEmpolyeeRepository empolyeeRepository,IDepartmentRepository departmentRepository)
+        public EmployeeController(IUnitOfWork unitOfWork//ASK CLR FOR OBJECT FROM CLASS IMPLEMENT INTERFACE
+            , IMapper mapper)
         {
-            this._empolyeeRepository = empolyeeRepository;
-            this._departmentRepository = departmentRepository;
+           
+            this._unitOfWork = unitOfWork;
+            this._mapper = mapper;
         }
         public IActionResult Index(string searchValue)
         {
             IEnumerable<Employee> employee;
+
             if (string.IsNullOrEmpty(searchValue))
-            {
-                employee = _empolyeeRepository.GetAll();
+                employee = _unitOfWork.EmployeeRepository.GetAll();
 
-            }
             else
-            {
-                 employee = _empolyeeRepository.GetEmployeesByName(searchValue);
+                employee = _unitOfWork.EmployeeRepository.GetEmployeesByName(searchValue);
+            var MappedEmplyee = _mapper.Map<IEnumerable<Employee>,IEnumerable<EmployeeViewModel>>(employee);
 
-            }
-            return View(employee);
+
+            return View(MappedEmplyee);
+        }
 
             //1-view data =>keyvaluepair[dictionary object]
             //transfer data from controller [action] to its view
@@ -42,30 +47,53 @@ namespace DemoPL.Controllers
             //transfer data
             //.net 4.8
             //  ViewBag.message = "hello from view bag";
-        }
+        
 
         public IActionResult Create()
         {
-          ViewBag.Departments =_departmentRepository.GetAll();
+          //ViewBag.Departments =_departmentRepository.GetAll();
 
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeViewModel employeeVM)
         {
             if (ModelState.IsValid) //server side 
             {
+                #region manual mapping
 
-               int result= _empolyeeRepository.Add(employee);
-                if (result > 0)
-                {
-                    TempData["message"] = "Employee is created";
+                ////var MappingEmployee = new Employee()
+                ////{
+                ////    Name = employeeVM.Name,
+                ////    age =employeeVM.age
+                ////};
+                ///  Employee employee = (Employee)employeeVM;
+                ///   
+                #endregion
 
-                }
+
+               employeeVM.ImageName=      DocumentSetting.UploadFile(employeeVM.Image, "Images");
+
+                var MappedEmployee=  _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
+               _unitOfWork.EmployeeRepository.Add(MappedEmployee);
+                _unitOfWork.Complete();
+
+
+
+                //dbcontext.dispose();
+
+                //1.updata
+                //2.delete
+                //3.updata
+                //(locally)
+                //_dbcontext.set<t>().add();
+                //_dbcontext.savechanges();  
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            return View(employeeVM);
         }
 
 
@@ -74,9 +102,10 @@ namespace DemoPL.Controllers
             if (id == null)
                 return BadRequest();//status code 400 client error
 
-            var employee = _empolyeeRepository.GetById(id.Value);
+            var employee = _unitOfWork.EmployeeRepository.GetById(id.Value);
             if (employee == null)
                 return NotFound();
+            var MappedEmplyee=_mapper.Map<Employee, EmployeeViewModel>(employee);   
             return View(ViewName, employee);
         }
 
@@ -94,15 +123,18 @@ namespace DemoPL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Employee employee, [FromRoute] int id)
+        public IActionResult Edit(EmployeeViewModel employeeVM, [FromRoute] int id)
         {
-            if (id != employee.Id)
+            if (id != employeeVM.Id)
                 return BadRequest();
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _empolyeeRepository.Update(employee);
+                    var mappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+                    _unitOfWork.EmployeeRepository.Update(mappedEmployee);
+                    _unitOfWork.Complete();
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
@@ -115,7 +147,7 @@ namespace DemoPL.Controllers
 
 
             }
-            return View(employee);
+            return View(employeeVM);
 
         }
         [HttpGet]
@@ -126,17 +158,21 @@ namespace DemoPL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Employee employee, [FromRoute] int id)
+        public IActionResult Delete(EmployeeViewModel employeeVM, [FromRoute] int id)
         {
-            if (id != employee.Id)
+            if (id != employeeVM.Id)
                 return BadRequest();
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _empolyeeRepository.Delete(employee);
+                    var mappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+                    _unitOfWork.EmployeeRepository.Delete(mappedEmployee);
+                    _unitOfWork.Complete();
+
                     return RedirectToAction(nameof(Index));
                 }
+
                 catch (System.Exception ex)
                 {
                     //1-log excep
@@ -147,7 +183,7 @@ namespace DemoPL.Controllers
 
 
             }
-            return View(employee);
+            return View(employeeVM);
 
         }
 

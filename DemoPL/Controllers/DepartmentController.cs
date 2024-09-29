@@ -1,4 +1,5 @@
-﻿using Demo.BLL.Interface;
+﻿using AutoMapper;
+using Demo.BLL.Interface;
 using Demo.BLL.Repositories;
 using Demo.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +8,19 @@ namespace DemoPL.Controllers
 {
     public class DepartmentController : Controller
     {
+        private readonly IUnitOfWork _unitOfWork;
+
         //inheritance DepartmentController is Controller
         //aggregation DepartmentController has DepartmentRepository
-        private readonly IDepartmentRepository _departRepo;
-        public DepartmentController(IDepartmentRepository departmentRepository)//ask clr for creating object from class implement interface
+        public DepartmentController(IUnitOfWork unitOfWork   , IMapper mapper) 
         {
-            _departRepo = departmentRepository;
-          //  _departRepo=new iDepartmentRepository();
+            this._unitOfWork = unitOfWork;
+            //   _unitOfWork.DepartmentRepository=new iDepartmentRepository();
         }
         //basURL/vontroller/index
         public IActionResult Index()
         {
-            var departments = _departRepo.GetAll();
+            var departments = _unitOfWork.DepartmentRepository.GetAll();
             return View(departments);
         }
         [HttpGet]
@@ -32,7 +34,9 @@ namespace DemoPL.Controllers
         {
             if(ModelState.IsValid) //server side 
             {
-              int result=  _departRepo.Add(department);
+                _unitOfWork.DepartmentRepository.Add(department);
+                int result=_unitOfWork.Complete();
+
                 //3.temp data ->dictionary object 
                 //transfer action to action 
                 if (result > 0)
@@ -52,7 +56,7 @@ namespace DemoPL.Controllers
             if(id == null)
                 return BadRequest();//status code 400 client error
             
-            var department = _departRepo.GetById(id.Value);
+            var department =  _unitOfWork.DepartmentRepository.GetById(id.Value);
             if(department == null)
                 return NotFound();
             return View(ViewName,department);
@@ -64,7 +68,7 @@ namespace DemoPL.Controllers
             //if (id == null)
             //    return BadRequest();//status code 400 client error
 
-            //var department = _departRepo.GetById(id.Value);
+            //var department =  _unitOfWork.DepartmentRepository.GetById(id.Value);
             //if (department == null)
             //    return NotFound();
             //return View(department);
@@ -80,7 +84,9 @@ namespace DemoPL.Controllers
             {
                 try
                 {
-                    _departRepo.Update(department);
+                   
+                    _unitOfWork.DepartmentRepository.Update(department);
+                    _unitOfWork.Complete();
                     return RedirectToAction(nameof(Index));
                 }
                 catch(System.Exception ex) 
@@ -112,7 +118,8 @@ namespace DemoPL.Controllers
             {
                 try
                 {
-                    _departRepo.Delete(department);
+                     _unitOfWork.DepartmentRepository.Delete(department);
+                    _unitOfWork.Complete ();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

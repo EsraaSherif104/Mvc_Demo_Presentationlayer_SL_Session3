@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Demo.BLL.Repositories;
 using Demo.BLL.Interface;
+using DemoPL.MappingProfile;
 
 
 namespace DemoPL
@@ -34,9 +35,18 @@ namespace DemoPL
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 
-            });//allow depandany injection
+            },ServiceLifetime.Scoped);
+            //allow depandany injection
+            //Life time of object
+            //per request(addscoped) when request stop whill remove object
+            //application run (singelton)//all time you run app
+            //object per operation lifetime(transient)
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            services.AddScoped<IEmpolyeeRepository, EmpoyeeRepository>();
+            services.AddAutoMapper(m=>m.AddProfile(new EmployeeProfile()));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+           
+        
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
