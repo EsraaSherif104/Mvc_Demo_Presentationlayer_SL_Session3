@@ -12,6 +12,6 @@ namespace Demo.BLL.Interface
         public IEmpolyeeRepository EmployeeRepository { get; set; }
         public IDepartmentRepository DepartmentRepository { get; set; }
 
-        int Complete();
+       Task<int> CompleteAsync();
     }
 }
