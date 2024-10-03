@@ -106,7 +106,7 @@ namespace DemoPL.Controllers
             if (employee == null)
                 return NotFound();
             var MappedEmplyee=_mapper.Map<Employee, EmployeeViewModel>(employee);   
-            return View(ViewName, employee);
+            return View(ViewName, MappedEmplyee);
         }
 
         [HttpGet]
@@ -162,13 +162,16 @@ namespace DemoPL.Controllers
         {
             if (id != employeeVM.Id)
                 return BadRequest();
-            if (ModelState.IsValid)
-            {
+            
                 try
                 {
                     var mappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                     _unitOfWork.EmployeeRepository.Delete(mappedEmployee);
-                    _unitOfWork.Complete();
+                  var result=  _unitOfWork.Complete();
+                    if (result > 0&&employeeVM.ImageName is not null)
+                    {
+                        DocumentSetting.DeleteFile(employeeVM.ImageName,"Images");
+                    }
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -178,12 +181,12 @@ namespace DemoPL.Controllers
                     //1-log excep
                     //2-form
                     ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(employeeVM);
 
                 }
 
 
-            }
-            return View(employeeVM);
+            
 
         }
 
