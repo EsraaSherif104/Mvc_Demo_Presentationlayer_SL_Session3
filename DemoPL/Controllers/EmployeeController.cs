@@ -6,6 +6,7 @@ using DemoPL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DemoPL.Controllers
 {
@@ -21,12 +22,12 @@ namespace DemoPL.Controllers
             this._unitOfWork = unitOfWork;
             this._mapper = mapper;
         }
-        public IActionResult Index(string searchValue)
+        public async Task<IActionResult> Index(string searchValue)
         {
             IEnumerable<Employee> employee;
 
             if (string.IsNullOrEmpty(searchValue))
-                employee = _unitOfWork.EmployeeRepository.GetAll();
+                employee =await _unitOfWork.EmployeeRepository.GetAllAsync();
 
             else
                 employee = _unitOfWork.EmployeeRepository.GetEmployeesByName(searchValue);
@@ -57,7 +58,7 @@ namespace DemoPL.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(EmployeeViewModel employeeVM)
+        public async Task<IActionResult> Create(EmployeeViewModel employeeVM)
         {
             if (ModelState.IsValid) //server side 
             {
@@ -77,8 +78,8 @@ namespace DemoPL.Controllers
 
                 var MappedEmployee=  _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
 
-               _unitOfWork.EmployeeRepository.Add(MappedEmployee);
-                _unitOfWork.Complete();
+             await  _unitOfWork.EmployeeRepository.AddAsync(MappedEmployee);
+               await _unitOfWork.CompleteAsync();
 
 
 
@@ -97,12 +98,12 @@ namespace DemoPL.Controllers
         }
 
 
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
             if (id == null)
                 return BadRequest();//status code 400 client error
 
-            var employee = _unitOfWork.EmployeeRepository.GetById(id.Value);
+            var employee =await _unitOfWork.EmployeeRepository.GetByIdAsync(id.Value);
             if (employee == null)
                 return NotFound();
             var MappedEmplyee=_mapper.Map<Employee, EmployeeViewModel>(employee);   
@@ -110,7 +111,7 @@ namespace DemoPL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //if (id == null)
             //    return BadRequest();//status code 400 client error
@@ -119,11 +120,11 @@ namespace DemoPL.Controllers
             //if (Employee == null)
             //    return NotFound();
             //return View(Employee);
-            return Details(id, "Edit");
+            return await Details(id, "Edit");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(EmployeeViewModel employeeVM, [FromRoute] int id)
+        public async Task<IActionResult> Edit(EmployeeViewModel employeeVM, [FromRoute] int id)
         {
             if (id != employeeVM.Id)
                 return BadRequest();
@@ -138,7 +139,7 @@ namespace DemoPL.Controllers
                     }
                     var mappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                     _unitOfWork.EmployeeRepository.Update(mappedEmployee);
-                    _unitOfWork.Complete();
+                   await _unitOfWork.CompleteAsync();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -156,14 +157,14 @@ namespace DemoPL.Controllers
 
         }
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(EmployeeViewModel employeeVM, [FromRoute] int id)
+        public async Task<IActionResult> Delete(EmployeeViewModel employeeVM, [FromRoute] int id)
         {
             if (id != employeeVM.Id)
                 return BadRequest();
@@ -172,7 +173,7 @@ namespace DemoPL.Controllers
                 {
                     var mappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                     _unitOfWork.EmployeeRepository.Delete(mappedEmployee);
-                  var result=  _unitOfWork.Complete();
+                  var result= await _unitOfWork.CompleteAsync();
                     if (result > 0&&employeeVM.ImageName is not null)
                     {
                         DocumentSetting.DeleteFile(employeeVM.ImageName,"Images");
