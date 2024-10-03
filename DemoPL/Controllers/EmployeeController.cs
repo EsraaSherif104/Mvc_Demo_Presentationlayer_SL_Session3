@@ -131,7 +131,11 @@ namespace DemoPL.Controllers
             {
                 try
                 {
-                    employeeVM.ImageName = DocumentSetting.UploadFile(employeeVM.Image, "Images");
+                    if(employeeVM.Image != null) 
+                    {
+                        employeeVM.ImageName = DocumentSetting.UploadFile(employeeVM.Image, "Images");
+
+                    }
                     var mappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                     _unitOfWork.EmployeeRepository.Update(mappedEmployee);
                     _unitOfWork.Complete();

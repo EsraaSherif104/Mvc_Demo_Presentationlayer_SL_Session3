@@ -3,6 +3,7 @@
 @{
     var departments = new SelectList(DepartmentRepo.GetAll(), "Id", "Name");
 }
+<input asp-for="ImageName" hidden />
 
 <div class="form-group">
     <label class="col-form-label" asp-for="Name"> </label>
