@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿
+using AutoMapper;
 using Demo.BLL.Interface;
 using Demo.DAL.Models;
 using DemoPL.Helpers;
@@ -17,7 +18,7 @@ namespace DemoPL.Controllers
         public EmployeeController(IUnitOfWork unitOfWork//ASK CLR FOR OBJECT FROM CLASS IMPLEMENT INTERFACE
             , IMapper mapper)
         {
-           
+
             this._unitOfWork = unitOfWork;
             this._mapper = mapper;
         }
@@ -30,28 +31,28 @@ namespace DemoPL.Controllers
 
             else
                 employee = _unitOfWork.EmployeeRepository.GetEmployeesByName(searchValue);
-            var MappedEmplyee = _mapper.Map<IEnumerable<Employee>,IEnumerable<EmployeeViewModel>>(employee);
+            var MappedEmplyee = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(employee);
 
 
             return View(MappedEmplyee);
         }
 
-            //1-view data =>keyvaluepair[dictionary object]
-            //transfer data from controller [action] to its view
-            //.net framework 3.5
-            //faster
-            //  ViewData["message"] = "Hello from view data";
-            //2.viewbag=>dynamic property [based on dynamic keyword]
-            //data type in run time
-            //no casting
-            //transfer data
-            //.net 4.8
-            //  ViewBag.message = "hello from view bag";
-        
+        //1-view data =>keyvaluepair[dictionary object]
+        //transfer data from controller [action] to its view
+        //.net framework 3.5
+        //faster
+        //  ViewData["message"] = "Hello from view data";
+        //2.viewbag=>dynamic property [based on dynamic keyword]
+        //data type in run time
+        //no casting
+        //transfer data
+        //.net 4.8
+        //  ViewBag.message = "hello from view bag";
+
 
         public IActionResult Create()
         {
-          //ViewBag.Departments =_departmentRepository.GetAll();
+            //ViewBag.Departments =_departmentRepository.GetAll();
 
             return View();
         }
@@ -73,11 +74,11 @@ namespace DemoPL.Controllers
                 #endregion
 
 
-               employeeVM.ImageName=      DocumentSetting.UploadFile(employeeVM.Image, "Images");
+                employeeVM.ImageName = DocumentSetting.UploadFile(employeeVM.Image, "Images");
 
-                var MappedEmployee=  _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+                var MappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
 
-               _unitOfWork.EmployeeRepository.Add(MappedEmployee);
+                _unitOfWork.EmployeeRepository.Add(MappedEmployee);
                 _unitOfWork.Complete();
 
 
@@ -105,8 +106,8 @@ namespace DemoPL.Controllers
             var employee = _unitOfWork.EmployeeRepository.GetById(id.Value);
             if (employee == null)
                 return NotFound();
-            var MappedEmplyee=_mapper.Map<Employee, EmployeeViewModel>(employee);   
-            return View(ViewName, employee);
+            var MappedEmplyee = _mapper.Map<Employee, EmployeeViewModel>(employee);
+            return View(ViewName, MappedEmplyee);
         }
 
         [HttpGet]
