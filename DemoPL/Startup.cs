@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Demo.BLL.Repositories;
 using Demo.BLL.Interface;
 using DemoPL.MappingProfile;
+using Microsoft.AspNetCore.Identity;
+using Demo.DAL.Models;
 
 
 namespace DemoPL
@@ -45,6 +47,20 @@ namespace DemoPL
             services.AddAutoMapper(m=>m.AddProfile(new EmployeeProfile()));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
+            {
+                Options.Password.RequireNonAlphanumeric = true;
+                Options.Password.RequireDigit = true;
+                Options.Password.RequireLowercase = true;
+                Options.Password.RequireUppercase = true;
+                //p@ssw0rd
+                //Pa$$w0rd
+            })
+       
+            
+                .AddEntityFrameworkStores<MvcAppDbcontext>();
+          
+            services.AddAuthentication();
            
         
         }
@@ -73,7 +89,7 @@ namespace DemoPL
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Account}/{action=Register}/{id?}");
             });
         }
     }
