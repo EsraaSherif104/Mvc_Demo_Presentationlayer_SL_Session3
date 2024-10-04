@@ -16,6 +16,7 @@ using Demo.BLL.Interface;
 using DemoPL.MappingProfile;
 using Microsoft.AspNetCore.Identity;
 using Demo.DAL.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 namespace DemoPL
@@ -56,11 +57,17 @@ namespace DemoPL
                 //p@ssw0rd
                 //Pa$$w0rd
             })
-       
-            
-                .AddEntityFrameworkStores<MvcAppDbcontext>();
+
+
+                .AddEntityFrameworkStores<MvcAppDbcontext>()
+                .AddDefaultTokenProviders();
+                
           
-            services.AddAuthentication();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(Options=>
+            {
+                Options.LoginPath = "Account/Login";
+                Options.AccessDeniedPath = "Home/Error";
+            });
            
         
         }
@@ -82,6 +89,7 @@ namespace DemoPL
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
@@ -89,7 +97,7 @@ namespace DemoPL
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Account}/{action=Register}/{id?}");
+                    pattern: "{controller=Account}/{action=Login}/{id?}");
             });
         }
     }

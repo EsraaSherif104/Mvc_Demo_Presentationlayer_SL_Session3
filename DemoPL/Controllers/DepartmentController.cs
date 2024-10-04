@@ -2,12 +2,15 @@
 using Demo.BLL.Interface;
 using Demo.BLL.Repositories;
 using Demo.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace DemoPL.Controllers
 {
-    public class DepartmentController : Controller
+	[Authorize]
+
+	public class DepartmentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 

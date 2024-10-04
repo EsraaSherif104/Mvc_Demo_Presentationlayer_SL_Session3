@@ -3,6 +3,7 @@ using Demo.BLL.Interface;
 using Demo.DAL.Models;
 using DemoPL.Helpers;
 using DemoPL.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,9 @@ using System.Threading.Tasks;
 
 namespace DemoPL.Controllers
 {
-    public class EmployeeController : Controller
+	[Authorize]
+
+	public class EmployeeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
