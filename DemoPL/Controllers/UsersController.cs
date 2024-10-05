@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Demo.DAL.Models;
 using DemoPL.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace DemoPL.Controllers
 {
+	[Authorize]
     public class UsersController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
