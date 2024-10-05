@@ -1,4 +1,5 @@
-﻿using Demo.DAL.Models;
+﻿using AutoMapper;
+using Demo.DAL.Models;
 using DemoPL.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,14 @@ namespace DemoPL.Controllers
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 
-		public UsersController(UserManager<ApplicationUser>UserManager)
+		public readonly IMapper _Mapper;
+
+        public UsersController(UserManager<ApplicationUser>UserManager,
+			IMapper mapper)
         {
 			_userManager = UserManager;
-		}
+            _Mapper = mapper;
+        }
         public async Task<IActionResult> Index(string searchValue)
 		{
 			if(string.IsNullOrEmpty(searchValue))
@@ -49,6 +54,17 @@ namespace DemoPL.Controllers
 				};
 				return View(new List<UserViewModel> { MappedUser});
 			}
+		}
+		public async Task<IActionResult> Details(string id,string ViewName= "Details")
+		{
+			if(id is null)
+				return BadRequest();
+		       var user=   await _userManager.FindByIdAsync(id);
+			if(user is null)
+				return NotFound();
+			var MappedUser = _Mapper.Map<ApplicationUser, UserViewModel>(user);
+
+			return View(ViewName,MappedUser);
 		}
 	}
 }

@@ -17,6 +17,7 @@ using DemoPL.MappingProfile;
 using Microsoft.AspNetCore.Identity;
 using Demo.DAL.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using AutoMapper;
 
 
 namespace DemoPL
@@ -45,7 +46,9 @@ namespace DemoPL
             //application run (singelton)//all time you run app
             //object per operation lifetime(transient)
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            services.AddAutoMapper(m=>m.AddProfile(new EmployeeProfile()));
+            services.AddAutoMapper(m=>m.AddProfiles(new List<Profile>() { new UserProfile() ,new EmployeeProfile()}));
+
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
