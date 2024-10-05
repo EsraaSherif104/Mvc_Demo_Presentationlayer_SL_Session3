@@ -100,5 +100,30 @@ namespace DemoPL.Controllers
 			}
 			return View(model);
 		}
-	}
+	
+	public async Task<IActionResult> Delete(string id)
+		{
+			return await Details(id, "Delete");
+		}
+		[HttpPost]
+        public async Task<IActionResult> ConfirmDelete(string id)
+        {
+			try
+			{
+				var User=await _userManager.FindByIdAsync(id);
+			    await	_userManager.DeleteAsync(User);
+				return RedirectToAction(nameof(Index));
+
+
+			}
+			catch (Exception ex)
+			{
+				ModelState.AddModelError(string.Empty, ex.Message);
+				return RedirectToAction("Error", "Home");
+			}
+
+        }
+
+
+    }
 }
