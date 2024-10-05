@@ -4,13 +4,14 @@ using DemoPL.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DemoPL.Controllers
 {
-	public class UsersController : Controller
+    public class UsersController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 
@@ -65,6 +66,39 @@ namespace DemoPL.Controllers
 			var MappedUser = _Mapper.Map<ApplicationUser, UserViewModel>(user);
 
 			return View(ViewName,MappedUser);
+		}
+
+
+		public async Task< IActionResult> Edit(string id)
+		{
+			return await Details(id, "Edit");
+		}
+		[HttpPost]
+		public async Task<IActionResult>Edit(UserViewModel model, [FromRoute]string id)
+		{
+			if (id != model.id)
+				return BadRequest();
+			if (ModelState.IsValid)
+			{
+				try
+				{
+
+					// var MappedUser = _Mapper.Map<UserViewModel, ApplicationUser>(model);
+			   var User=	await	_userManager.FindByIdAsync(id);
+					User.PhoneNumber= model.PhoneNumber;
+					User.Fname= model.Fname;
+					User.Lname= model.Lname;
+			
+					await _userManager.UpdateAsync(User);
+                    return RedirectToAction(nameof(Index));
+                }
+				catch(Exception ex)
+				{
+					ModelState.AddModelError(string.Empty,ex.Message);	
+
+				}
+			}
+			return View(model);
 		}
 	}
 }
