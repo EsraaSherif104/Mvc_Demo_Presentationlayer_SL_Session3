@@ -46,7 +46,7 @@ namespace DemoPL
             //application run (singelton)//all time you run app
             //object per operation lifetime(transient)
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            services.AddAutoMapper(m=>m.AddProfiles(new List<Profile>() { new UserProfile() ,new EmployeeProfile()}));
+            services.AddAutoMapper(m=>m.AddProfiles(new List<Profile>() { new UserProfile() ,new EmployeeProfile(),new RoleProfile()}));
 
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
