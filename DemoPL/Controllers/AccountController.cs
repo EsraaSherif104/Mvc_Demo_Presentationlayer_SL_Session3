@@ -59,6 +59,7 @@ namespace DemoPL.Controllers
         //reset password 
         #endregion
         //Login
+        #region Login
         public IActionResult Login()
         {
             return View();
@@ -68,15 +69,15 @@ namespace DemoPL.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user =await _userManager.FindByEmailAsync(model.Email);
-                if(user is not null)
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user is not null)
                 {
                     //login
-                  var flag= await _userManager.CheckPasswordAsync(user, model.Password);
+                    var flag = await _userManager.CheckPasswordAsync(user, model.Password);
                     if (flag)
                     {
                         //login
-                    var result= await   _signInManager.PasswordSignInAsync(user,model.Password, model.RememberMe,false);
+                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
 
                         if (result.Succeeded)
                         {
@@ -96,6 +97,14 @@ namespace DemoPL.Controllers
             }
             return View(model);
         }
+
+        #endregion
+        public new async Task<IActionResult> SignOut()
+        {
+          await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
+        }
+
 
     }
 }
