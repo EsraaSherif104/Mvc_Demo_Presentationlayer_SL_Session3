@@ -99,12 +99,51 @@ namespace DemoPL.Controllers
         }
 
         #endregion
+        #region sign Out
         public new async Task<IActionResult> SignOut()
         {
-          await _signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
             return RedirectToAction(nameof(Login));
         }
 
+        #endregion
+        //forget password
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
 
-    }
+        public async Task<IActionResult> SendEmail(ForgetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var User =await _userManager.FindByEmailAsync(model.Email);
+               if(User is not null)
+                {
+
+                    //send email
+                    var email = new Email()
+                    {
+                        Subject="Reset Password" ,
+                        To=model.Email,
+                        Body="Reset Password Link"
+
+                    };
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "email is not exists");
+                }
+            }
+            else
+            {
+                return View("ForgetPassword", model);
+            }
+
+        }
+		//reset
+
+
+	}
 }
