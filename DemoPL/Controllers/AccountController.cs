@@ -1,4 +1,5 @@
 ﻿using Demo.DAL.Models;
+using DemoPL.Helpers;
 using DemoPL.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -121,28 +122,70 @@ namespace DemoPL.Controllers
                 var User =await _userManager.FindByEmailAsync(model.Email);
                if(User is not null)
                 {
-
-                    //send email
-                    var email = new Email()
+                    var token=await _userManager.GeneratePasswordResetTokenAsync(User);
+                    //vaild for only one time for this user
+					//https://localhost:44328/Account/Resetpassword?email=esraasherif9992@gmail.com?Token=hgfjbgdh
+					var ResetPasswordLink = Url.Action("ResetPassword", "Account", new { email = User.Email ,Token= token }, Request.Scheme);
+					//send email
+					var email = new Email()
                     {
                         Subject="Reset Password" ,
                         To=model.Email,
-                        Body="Reset Password Link"
+                        Body= "ResetPasswordLink"
 
-                    };
+					};
+                    EmailSetting.SendEmail(email);
+                    return RedirectToAction(nameof(CheckYourInbex));
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "email is not exists");
                 }
             }
-            else
-            {
-                return View("ForgetPassword", model);
-            }
+           
+             return View("ForgetPassword", model);
+            
 
         }
+
+        public IActionResult CheckYourInbex()
+        {
+            return View();
+        }
 		//reset
+        public IActionResult ResetPassword(string email,string token)
+        {
+            TempData["email"] = email;
+            TempData["token"] = token;
+            return View();
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if(ModelState.IsValid)
+            {
+                string email = TempData["email"] as string;
+                string token = TempData["token"] as string;
+                var user=await _userManager.FindByEmailAsync(email);
+             var result=  await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                if(result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Login));
+                }
+                else
+              
+                    foreach (var error in result.Errors)
+                        ModelState.AddModelError(string.Empty,error.Description);
+                    
+                                 
+            }
+            return View(model);
+        }
+       
+
+
+
 
 
 	}
